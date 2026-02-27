@@ -45,6 +45,21 @@ export function Simulator() {
 
         <div className="mt-6 grid gap-5">
           <label className="grid gap-2 text-sm">
+            <span className="text-slate-300">Vehicle</span>
+            <select
+              className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100"
+              value={vehicleType}
+              onChange={(e) => setVehicleType(e.target.value as VehicleType)}
+            >
+              {VEHICLE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="grid gap-2 text-sm">
             <span className="flex items-center justify-between text-slate-300">
               <span>Speed</span>
               <span className="font-medium tabular-nums text-slate-100">{speedKmh} km/h</span>
@@ -88,45 +103,36 @@ export function Simulator() {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        {comparisons.map(({ vehicleType, label, metrics }) => (
-          <article
-            key={vehicleType}
-            className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
-          >
-            <h2 className="text-sm font-semibold text-cyan-300">{label}</h2>
+      <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
+        <div className="mb-5 flex items-end justify-between">
+          <div>
+            <p className="text-sm text-slate-300">Gear</p>
+            <p className="text-lg font-semibold">{metrics.gearLabel}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-sm text-slate-300">Engine RPM</p>
+            <p className="text-lg font-semibold tabular-nums">{metrics.rpm.toFixed(0)}</p>
+          </div>
+        </div>
 
-            <div className="mb-4 mt-3 flex items-end justify-between">
-              <div>
-                <p className="text-xs text-slate-300">Gear</p>
-                <p className="text-lg font-semibold">{metrics.gearLabel}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-slate-300">Engine RPM</p>
-                <p className="text-lg font-semibold tabular-nums">{metrics.rpm.toFixed(0)}</p>
-              </div>
-            </div>
+        <div className="space-y-4">
+          <MetricBar label="Thermal Stress" valuePct={metrics.thermalStressPct} colorClass="bg-rose-500" />
+          <MetricBar
+            label="Mechanical Load"
+            valuePct={metrics.mechanicalLoadPct}
+            colorClass="bg-amber-500"
+          />
+          <MetricBar
+            label="Aerodynamic Load"
+            valuePct={metrics.aerodynamicLoadPct}
+            colorClass="bg-sky-500"
+          />
+          <MetricBar label="Total Workload" valuePct={metrics.totalWorkloadPct} colorClass="bg-emerald-500" />
+        </div>
 
-            <div className="space-y-3">
-              <MetricBar label="Thermal Stress" valuePct={metrics.thermalStressPct} colorClass="bg-rose-500" />
-              <MetricBar
-                label="Mechanical Load"
-                valuePct={metrics.mechanicalLoadPct}
-                colorClass="bg-amber-500"
-              />
-              <MetricBar
-                label="Aerodynamic Load"
-                valuePct={metrics.aerodynamicLoadPct}
-                colorClass="bg-sky-500"
-              />
-              <MetricBar label="Total Workload" valuePct={metrics.totalWorkloadPct} colorClass="bg-emerald-500" />
-            </div>
-
-            <p className="mt-4 text-xs text-slate-300">
-              At-a-glance: <span className="font-medium text-slate-100">{dominantLabel(metrics)}</span>
-            </p>
-          </article>
-        ))}
+        <p className="mt-5 text-sm text-slate-300">
+          At-a-glance: <span className="font-medium text-slate-100">{dominantLabel(metrics)}</span>
+        </p>
       </section>
     </main>
   );
