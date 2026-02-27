@@ -5,14 +5,11 @@ import { MetricBar } from "@/components/MetricBar";
 import {
   calculateVehicleMetrics,
   type DriveState,
-  type VehicleType
+  type VehicleType,
+  VEHICLE_PARAMS
 } from "@/lib/physicsCore";
 
-const VEHICLE_OPTIONS: Array<{ value: VehicleType; label: string }> = [
-  { value: "commuter100", label: "100cc Air-Cooled Commuter" },
-  { value: "duke200", label: "200cc KTM Duke (Liquid-Cooled)" },
-  { value: "altoK10", label: "Maruti Alto K10 (AC ON)" }
-];
+const VEHICLE_ORDER: VehicleType[] = ["commuter100", "duke200", "altoK10"];
 
 function dominantLabel(metrics: ReturnType<typeof calculateVehicleMetrics>): string {
   const pairs: Array<[string, number]> = [
@@ -25,21 +22,25 @@ function dominantLabel(metrics: ReturnType<typeof calculateVehicleMetrics>): str
 }
 
 export function Simulator() {
-  const [vehicleType, setVehicleType] = useState<VehicleType>("commuter100");
   const [speedKmh, setSpeedKmh] = useState<number>(70);
   const [state, setState] = useState<DriveState>("cruising");
 
-  const metrics = useMemo(
-    () => calculateVehicleMetrics(vehicleType, speedKmh, state),
-    [vehicleType, speedKmh, state]
+  const comparisons = useMemo(
+    () =>
+      VEHICLE_ORDER.map((vehicleType) => ({
+        vehicleType,
+        label: VEHICLE_PARAMS[vehicleType].label,
+        metrics: calculateVehicleMetrics(vehicleType, speedKmh, state)
+      })),
+    [speedKmh, state]
   );
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-8 px-6 py-10">
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-10">
       <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-xl shadow-black/20">
         <h1 className="text-2xl font-semibold tracking-tight">Vehicle Load Simulator</h1>
         <p className="mt-2 text-sm text-slate-300">
-          Interactive first-principles estimate of thermal, mechanical, and aerodynamic workload.
+          Compare all vehicles side-by-side at the same speed and drive state.
         </p>
 
         <div className="mt-6 grid gap-5">
